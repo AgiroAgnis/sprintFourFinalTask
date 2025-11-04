@@ -70,9 +70,9 @@ func meanSpeed(steps int, height float64, duration time.Duration) float64 {
 	if duration <= 0 {
 		return 0
 	}
-
+	durationInHour := duration.Hours()
 	dist := distance(steps, height)
-	meanSpeed := dist / duration.Hours()
+	meanSpeed := dist / durationInHour
 	return meanSpeed
 }
 
