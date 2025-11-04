@@ -3,6 +3,7 @@ package daysteps
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -44,6 +45,10 @@ func parsePackage(data string) (int, time.Duration, error) {
 		return 0, 0, ErrInvalidTime
 	}
 
+	if duration <= 0 {
+		return 0, 0, ErrInvalidTime
+	}
+
 	return steps, duration, nil
 }
 
@@ -53,17 +58,12 @@ func DayActionInfo(data string, weight, height float64) string {
 	steps, duration, err := parsePackage(data)
 
 	if err != nil {
+		log.Println(err)
 		switch err {
-		case ErrInvalidLength:
-			return "Неверный ввод данных"
-		case ErrNonNumeric:
-			return "Требуется число"
-		case ErrInvalidSteps:
-			return "Количество шагов не может быть отрицательным или нулевым"
-		case ErrInvalidTime:
-			return "Неккоректный формат времени"
+		case ErrInvalidLength, ErrNonNumeric, ErrInvalidSteps, ErrInvalidTime:
+			return ""
 		default:
-			return "Неизвестная ошибка"
+			return ""
 		}
 	}
 
@@ -72,16 +72,10 @@ func DayActionInfo(data string, weight, height float64) string {
 	calories, err := spentaclories.WalkingSpentCalories(steps, weight, height, duration)
 
 	if err != nil {
-		switch err {
-		case spentaclories.ErrInvalidWeight:
-			return "Вес должен быть в диапазоне от 40 до 150 кг"
-		case spentaclories.ErrInvalidHeight:
-			return "Рост должен быть в диапазоне от 140 до 250"
-		default:
-			return "Ошибка расчета калорий"
-		}
+		log.Println(err)
+		return ""
 	}
 
-	result := fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n", steps, distance, calories)
+	result := fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.", steps, distance, calories)
 	return result
 }
