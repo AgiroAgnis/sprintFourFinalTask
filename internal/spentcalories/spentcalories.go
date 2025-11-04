@@ -97,7 +97,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 			return "", err
 		}
 
-		result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
+		result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
 			activity, durationHours, dist, speed, calories)
 		return result, nil
 
@@ -108,7 +108,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 			log.Println(err)
 			return "", err
 		}
-		result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
+		result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
 			activity, durationHours, dist, speed, calories)
 		return result, nil
 
@@ -167,7 +167,7 @@ func WalkingSpentCalories(steps int, weight, height float64, duration time.Durat
 	speed := meanSpeed(steps, height, duration)
 	durationInMinutes := duration.Minutes()
 
-	caloriesProcessing := (weight * speed * float64(durationInMinutes)) / float64(minInH)
+	caloriesProcessing := (weight * speed * durationInMinutes) / float64(minInH)
 	calories := caloriesProcessing * walkingCaloriesCoefficient
 
 	return calories, nil
