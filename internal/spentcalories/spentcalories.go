@@ -102,7 +102,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		return result, nil
 
 	case "Ходьба":
-		calories, err := RunningSpentCalories(steps, weight, height, duration)
+		calories, err := WalkingSpentCalories(steps, weight, height, duration)
 
 		if err != nil {
 			log.Println(err)
