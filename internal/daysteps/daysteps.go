@@ -1,7 +1,14 @@
 package daysteps
 
 import (
+	"errors"
+	"fmt"
+	"log"
+	"strconv"
+	"strings"
 	"time"
+
+	spentaclories "github.com/Yandex-Practicum/tracker/internal/spentcalories"
 )
 
 const (
@@ -11,10 +18,64 @@ const (
 	mInKm = 1000
 )
 
+var ErrInvalidLength = errors.New("неверный ввод данных")
+var ErrNonNumeric = errors.New("требуется число")
+var ErrInvalidSteps = errors.New("количество шагов не может быть отрицательным или нулевым")
+var ErrInvalidTime = errors.New("неккоректный формат времени")
+
 func parsePackage(data string) (int, time.Duration, error) {
 	// TODO: реализовать функцию
+
+	parts := strings.SplitN(data, ",", 2)
+	if len(parts) != 2 {
+		return 0, 0, ErrInvalidLength
+	}
+
+	steps, err := strconv.Atoi(parts[0])
+	if err != nil {
+		return 0, 0, ErrNonNumeric
+	}
+
+	if steps <= 0 {
+		return 0, 0, ErrInvalidSteps
+	}
+
+	duration, err := time.ParseDuration(parts[1])
+	if err != nil {
+		return 0, 0, ErrInvalidTime
+	}
+
+	if duration <= 0 {
+		return 0, 0, ErrInvalidTime
+	}
+
+	return steps, duration, nil
 }
 
 func DayActionInfo(data string, weight, height float64) string {
 	// TODO: реализовать функцию
+
+	steps, duration, err := parsePackage(data)
+
+	if err != nil {
+		log.Println(err)
+		switch err {
+		case ErrInvalidLength, ErrNonNumeric, ErrInvalidSteps, ErrInvalidTime:
+			return ""
+		default:
+			return ""
+		}
+	}
+
+	distance := (float64(steps) * stepLength) / float64(mInKm)
+
+	calories, err := spentaclories.WalkingSpentCalories(steps, weight, height, duration)
+
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+
+	result := fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n", steps, distance, calories)
+	return result
 }
